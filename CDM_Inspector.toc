@@ -1,0 +1,10 @@
+## Interface: 20400
+## Title: CDM_Inspector
+## Author: Classic Damage Models
+## Version: 0.1.0
+## Notes: 
+## Dependencies: 
+## OptionalDeps: SuperInspect, SuperInspect_UI
+## SavedVariablesPerCharacter: 
+## SavedVariables: CDM_InspectorData, CDM_Inspector_Playername, CDM_InspectorVersion, CDM_Inspector_Settings
+CDM_Inspector.xml
