@@ -1,16 +1,16 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.blizzard.com/wow/ui/">
-	<Script file="CDM_Inspector.lua"/>
-	<Frame name="CDM_InspectorFrame" parent="UIParent" hidden="false">
+	<Script file="Inspector.lua"/>
+	<Frame name="InspectorFrame" parent="UIParent" hidden="false">
 		<Scripts>
 			<OnLoad>
-				CDM_Inspector_OnLoad();
+				Inspector_OnLoad();
 			</OnLoad>
 			<OnEvent>
-				CDM_Inspector_OnEvent();
+				Inspector_OnEvent();
 			</OnEvent>
 			<OnUpdate>
-				CDM_Inspector_OnUpdate();
+				Inspector_OnUpdate();
 			</OnUpdate>
 		</Scripts>
 	</Frame>

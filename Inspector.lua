@@ -1,4 +1,4 @@
-ADDON_VERSION = GetAddOnMetadata("CDM_Inspector", "Version");
+ADDON_VERSION = GetAddOnMetadata("Inspector", "Version");
 
 AddonVersion = ADDON_VERSION;
 
@@ -163,7 +163,7 @@ ZoneToIndex = {
 	["Auchindoun"] = 99,
 	["The Bone Wastes"] = 100, -- Substitute for Auchindoun, since this is what shows on the minimap.
 	["Coilfang Reservoir"] = 101, -- Not used yet.
-	
+
 	--TBC Zones
 	["Azuremyst Isle"] = 102,
 	["Bloodmyst Isle"] = 103,
@@ -233,12 +233,12 @@ function GetTime_S()
 end
 
 function RealmPlayers_Debug(_Text)
-	if(CDM_Inspector_Settings["DebugMode"] == true) then
+	if(Inspector_Settings["DebugMode"] == true) then
 		DEFAULT_CHAT_FRAME:AddMessage(_Text);
 	end
 end
 
-function CDM_Inspector_OnLoad()
+function Inspector_OnLoad()
 	this:RegisterEvent("PLAYER_TARGET_CHANGED");
 	this:RegisterEvent("INSPECT_HONOR_UPDATE");
 	this:RegisterEvent("VARIABLES_LOADED");
@@ -251,11 +251,11 @@ function CDM_Inspector_OnLoad()
 end
 
 function GetActiveOnlineData(_CurrOnlineDataTime, _CurrentDate)
-	if(CDM_InspectorData["OnlineData"] == nil) then
-		CDM_InspectorData["OnlineData"] = {};
+	if(InspectorData["OnlineData"] == nil) then
+		InspectorData["OnlineData"] = {};
 	end
-	local onlineData = CDM_InspectorData["OnlineData"];
-		
+	local onlineData = InspectorData["OnlineData"];
+
 	if(RealmPlayers_CurrentOnlineData == nil) then
 		RealmPlayers_CurrentOnlineData = {};
 		RealmPlayers_CurrentOnlineData["OnlineCharacters"] = {};
@@ -276,17 +276,17 @@ function GetActiveOnlineData(_CurrOnlineDataTime, _CurrentDate)
 	return onlineData, RealmPlayers_CurrentOnlineData["OnlineCharacters"], RealmPlayers_CurrentOnlineData["OnlineDataString"];
 end
 
-function CDM_Inspector_OnEvent()
+function Inspector_OnEvent()
 	if(event == "VARIABLES_LOADED") then
 		AddonVersion = ADDON_VERSION;
-		if(CDM_Inspector_Settings == nil) then
-			CDM_Inspector_Settings = {};
+		if(Inspector_Settings == nil) then
+			Inspector_Settings = {};
 		end
-		if(CDM_Inspector_Settings["MaxDatabase"] == nil) then
-			CDM_Inspector_Settings["MaxDatabase"] = 1000;
+		if(Inspector_Settings["MaxDatabase"] == nil) then
+			Inspector_Settings["MaxDatabase"] = 1000;
 		end
-		if(CDM_InspectorData == nil) then
-			CDM_InspectorData = {};
+		if(InspectorData == nil) then
+			InspectorData = {};
 		end
 		RealmPlayers_Playername = UnitName("player");
 		DEFAULT_CHAT_FRAME:AddMessage("Inspector (/inspector) version "..AddonVersion.." loaded!");
@@ -304,7 +304,7 @@ function CDM_Inspector_OnEvent()
 		local currOnlineDataTime = GetTime_S();
 		local currentDate = date("!%Y-%m-%d %X");
 		local onlineData, onlineCharacters, onlineDataString = GetActiveOnlineData(currOnlineDataTime, currentDate);
-		
+
 		local numWhoResults = GetNumWhoResults();
 		for i = 1, numWhoResults, 1 do
 			local name, guild, level, race, class, zone, group = GetWhoInfo(i);
@@ -313,7 +313,7 @@ function CDM_Inspector_OnEvent()
 			end
 			if(onlineCharacters[name] == nil) then
 				onlineCharacters[name] = 1;
-				
+
 				if(RaceToIndex[race] ~= nil) then
 					race = RaceToIndex[race];
 				end
@@ -327,29 +327,29 @@ function CDM_Inspector_OnEvent()
 			end
 		end
 		RealmPlayers_CurrentOnlineData["OnlineDataString"] = onlineDataString;
-		
+
 		onlineData[1] = "" .. currOnlineDataTime .. ";" .. RealmPlayers_CurrentOnlineData["OnlineDataStartDateTime"] .. ";" .. currentDate .. ";" .. onlineDataString;
 
 	elseif(event == "GUILD_ROSTER_UPDATE") then
 		local prevShowOffline = GetGuildRosterShowOffline();
 		SetGuildRosterShowOffline(1);
-		
+
 		local guildOnlineCount = 0;
 		local guild, guildRank, guildRankIndex = GetGuildInfo("player");
 		if(guild ~= nil) then
 			local numGuildMembers = GetNumGuildMembers();
-			
+
 			local currOnlineDataTime = GetTime_S();
 			local currentDate = date("!%Y-%m-%d %X");
 			local onlineData, onlineCharacters, onlineDataString = GetActiveOnlineData(currOnlineDataTime, currentDate);
-		
+
 			for index = 1, numGuildMembers, 1 do
 				local name, rank, rankIndex, level, class, zone, _, _, online, status = GetGuildRosterInfo(index);
 				if(online == 1) then
 					guildOnlineCount = guildOnlineCount + 1;
 					if(onlineCharacters[name] == nil) then
 						onlineCharacters[name] = 1;
-				
+
 						if(RaceToIndex[race] ~= nil) then
 							race = RaceToIndex[race];
 						end
@@ -364,7 +364,7 @@ function CDM_Inspector_OnEvent()
 				end
 			end
 			RealmPlayers_CurrentOnlineData["OnlineDataString"] = onlineDataString;
-		
+
 			onlineData[1] = "" .. currOnlineDataTime .. ";" .. GetScribbledRealmName() .. ";" .. RealmPlayers_CurrentOnlineData["OnlineDataStartDateTime"] .. ";" .. currentDate .. ";" .. onlineDataString;
 		end
 		SetGuildRosterShowOffline(prevShowOffline);
@@ -386,7 +386,7 @@ function CDM_Inspector_OnEvent()
 				local onlineData, onlineCharacters, onlineDataString = GetActiveOnlineData(currOnlineDataTime, currentDate);
 				if(onlineCharacters[name] == nil) then
 					onlineCharacters[name] = 1;
-				
+
 					if(RaceToIndex[raceEN] ~= nil) then
 						raceEN = RaceToIndex[raceEN];
 					end
@@ -409,15 +409,15 @@ end
 
 function RealmPlayers_Command(arg1)
 	if(string.lower(arg1) == "toggledebug") then
-		if(CDM_Inspector_Settings["DebugMode"] == true) then
-			CDM_Inspector_Settings["DebugMode"] = false;
+		if(Inspector_Settings["DebugMode"] == true) then
+			Inspector_Settings["DebugMode"] = false;
 		else
-			CDM_Inspector_Settings["DebugMode"] = true;
+			Inspector_Settings["DebugMode"] = true;
 		end
 	elseif(string.lower(arg1) == "printinspected") then
 		local playerList = "";
 		local playerCount = 0;
-		for i, v in pairs(CDM_InspectorData) do
+		for i, v in pairs(InspectorData) do
 			playerList = playerList..i..", ";
 			playerCount = playerCount + 1;
 		end
@@ -426,7 +426,7 @@ function RealmPlayers_Command(arg1)
 		local currTime = GetTime();
 		local playerList = "";
 		local playerCount = 0;
-		for i, v in pairs(CDM_InspectorData) do
+		for i, v in pairs(InspectorData) do
 			if(currTime - v.LastInspect < 120) then
 				playerList = playerList..i..", ";
 				playerCount = playerCount + 1;
@@ -466,7 +466,7 @@ function StartInspectingTarget()
 	else
 		local petInfo = GetPetInfo("target");
 		if(petInfo ~= nil) then
-			if(CDM_InspectorData[petInfo.Owner] ~= nil) then
+			if(InspectorData[petInfo.Owner] ~= nil) then
 				local petData = "";
 				local petColor = "";
 				if(petInfo.Type == "Companion") then
@@ -484,21 +484,21 @@ function StartInspectingTarget()
 						petData = petData..":"..creatureType;
 					end
 				end
-				
+
 				--extraData
 				if(petData ~= "") then
-					if(CDM_InspectorData[petInfo.Owner].ExtraData == nil) then
-						CDM_InspectorData[petInfo.Owner].ExtraData = petData;
+					if(InspectorData[petInfo.Owner].ExtraData == nil) then
+						InspectorData[petInfo.Owner].ExtraData = petData;
 						table.insert(RecentlyInspected, petColor..petInfo.Name);
 					else
-						if(string.find(CDM_InspectorData[petInfo.Owner].ExtraData, petData) == nil) then
+						if(string.find(InspectorData[petInfo.Owner].ExtraData, petData) == nil) then
 							if(petInfo.Type == "Companion") then
-								if(string.find(CDM_InspectorData[petInfo.Owner].ExtraData, "P:"..petInfo.Name..":"..petInfo.Level) == nil) then
-									CDM_InspectorData[petInfo.Owner].ExtraData = CDM_InspectorData[petInfo.Owner].ExtraData..","..petData;
+								if(string.find(InspectorData[petInfo.Owner].ExtraData, "P:"..petInfo.Name..":"..petInfo.Level) == nil) then
+									InspectorData[petInfo.Owner].ExtraData = InspectorData[petInfo.Owner].ExtraData..","..petData;
 									table.insert(RecentlyInspected, petColor..petInfo.Name);
 								end
 							else
-								CDM_InspectorData[petInfo.Owner].ExtraData = CDM_InspectorData[petInfo.Owner].ExtraData..","..petData;
+								InspectorData[petInfo.Owner].ExtraData = InspectorData[petInfo.Owner].ExtraData..","..petData;
 								table.insert(RecentlyInspected, petColor..petInfo.Name);
 							end
 						end
@@ -559,7 +559,7 @@ function GetToolTipText()
 			end
 		end
 	end
-	
+
 	return leftText, rightText;
 end
 function GetBuffText(_UnitID, _BuffID)
@@ -567,17 +567,17 @@ function GetBuffText(_UnitID, _BuffID)
 		CreateGameToolTip();
 	end
 	GameToolTip:SetUnitBuff(_UnitID, _BuffID);
-	
+
 	return GetToolTipText();
 end
 
 function DeleteGameToolTip()
 	GameToolTip:ClearLines()
-	for i=1,30 do 
-		GameToolTip.Rlines[i]:SetText() 
+	for i=1,30 do
+		GameToolTip.Rlines[i]:SetText()
 	end
-	if not GameToolTip:IsOwned(tt) then 
-		GameToolTip:SetOwner(tt, "ANCHOR_NONE") 
+	if not GameToolTip:IsOwned(tt) then
+		GameToolTip:SetOwner(tt, "ANCHOR_NONE")
 	end
 end
 
@@ -587,10 +587,10 @@ function GetMount(_UnitID)
 		if(currBuff) then
 			leftText, rightText = GetBuffText(_UnitID, i);
 			if(table.getn(leftText) >= 2) then
-				if(leftText[2] == "Increases speed by 100%." 
-				or leftText[2] == "Increases speed by 60%." 
-				or leftText[2] == "Increases flight speed by 280%." 
-				or leftText[2] == "Increases flight speed by 310%." 
+				if(leftText[2] == "Increases speed by 100%."
+				or leftText[2] == "Increases speed by 60%."
+				or leftText[2] == "Increases flight speed by 280%."
+				or leftText[2] == "Increases flight speed by 310%."
 				or leftText[2] == "Slow and steady..." --Turtle mount
 				) then
 					return leftText[1];
@@ -607,7 +607,7 @@ function GetPetInfo(_UnitID)
 	end
 	GameToolTip:SetUnit(_UnitID);
 	local data = GetToolTipText();
-	
+
 	if(table.getn(data) >= 3) then
 		local petIdentifierIndex = string.find(data[2], "'s Pet");
 		if(petIdentifierIndex == nil) then
@@ -638,7 +638,7 @@ function GrabPlayerInspectData()
 	--honor etc
 	UpdateCharacterHonorData("player");
 	--honor etc
-	
+
 	--arena etc
 	UpdateCharacterArenaData("player");
 	--arena etc
@@ -658,7 +658,7 @@ end
 
 function UpdateCharacterHonorData(_Target)
 	local characterName = UnitName(_Target);
-	
+
 	local todayHK, todayHonor, yesterdayHK, yesterdayHonor, lifetimeHK;
 	if(_Target == "player") then
 		yesterdayHK, yesterdayHonor = GetPVPYesterdayStats();
@@ -667,7 +667,7 @@ function UpdateCharacterHonorData(_Target)
 	else--if(_Target == "target")
 		todayHK, todayHonor, yesterdayHK, yesterdayHonor, lifetimeHK = GetInspectHonorData();
 	end
-	CDM_InspectorData[characterName].HonorData = ""..todayHK..":"..todayHonor..":"..yesterdayHK..":"..yesterdayHonor..":"..lifetimeHK;
+	InspectorData[characterName].HonorData = ""..todayHK..":"..todayHonor..":"..yesterdayHK..":"..yesterdayHonor..":"..lifetimeHK;
 end
 
 function UpdateCharacterArenaData(_Target)
@@ -689,7 +689,7 @@ function UpdateCharacterArenaData(_Target)
 		teamName2, teamSize2, teamRating2, teamPlayed2, teamWins2, personalPlayed2, personalRating2, bg_red2, bg_green2, bg_blue2, emblem2, emblem_red2, emblem_green2, emblem_blue2, border2, border_red2, border_green2, border_blue2 = GetInspectArenaTeamData(2)
 		teamName3, teamSize3, teamRating3, teamPlayed3, teamWins3, personalPlayed3, personalRating3, bg_red3, bg_green3, bg_blue3, emblem3, emblem_red3, emblem_green3, emblem_blue3, border3, border_red3, border_green3, border_blue3 = GetInspectArenaTeamData(3)
 	end
-	
+
 	local arenaStr = "";
 	if(teamName1 ~= nil) then
 		arenaStr = arenaStr..teamName1..":"..teamSize1..":"..teamRating1..":"..teamPlayed1..":"..teamWins1..":"..personalPlayed1..":"..personalRating1..",";
@@ -701,7 +701,7 @@ function UpdateCharacterArenaData(_Target)
 		arenaStr = arenaStr..teamName3..":"..teamSize3..":"..teamRating3..":"..teamPlayed3..":"..teamWins3..":"..personalPlayed3..":"..personalRating3..",";
 	end
 	if(arenaStr ~= "") then
-		CDM_InspectorData[characterName].ArenaData = arenaStr;
+		InspectorData[characterName].ArenaData = arenaStr;
 	end
 end
 
@@ -710,11 +710,11 @@ function UpdateCharacterExtraData(_Target)
 	local mount = GetMount(_Target);
 	if(mount ~= "") then
 		local mountData = "M:"..mount;
-		if(CDM_InspectorData[characterName].ExtraData == nil) then
-			CDM_InspectorData[characterName].ExtraData = mountData;
+		if(InspectorData[characterName].ExtraData == nil) then
+			InspectorData[characterName].ExtraData = mountData;
 		else
-			if(string.find(CDM_InspectorData[characterName].ExtraData, mountData) == nil) then
-				CDM_InspectorData[characterName].ExtraData = CDM_InspectorData[characterName].ExtraData..","..mountData;
+			if(string.find(InspectorData[characterName].ExtraData, mountData) == nil) then
+				InspectorData[characterName].ExtraData = InspectorData[characterName].ExtraData..","..mountData;
 			end
 		end
 	end
@@ -731,7 +731,7 @@ function UpdateCharacterInfoData(_Target)
 	if(guildname == nil) then guildname = "nil"; end
 	if(guildtitle == nil) then guildtitle = "nil"; end
 	if(guildrank == nil) then guildrank = 0; end
-	CDM_InspectorData[characterName].PlayerData = race..":"..class..":"..guildname..":"..guildtitle..":"..guildrank..":"..sex..":"..level..":"..realmName;
+	InspectorData[characterName].PlayerData = race..":"..class..":"..guildname..":"..guildtitle..":"..guildrank..":"..sex..":"..level..":"..realmName;
 end
 
 function UpdateCharacterItemsData(_Target)
@@ -749,32 +749,32 @@ function UpdateCharacterItemsData(_Target)
 		end
 	end
 
-	if(CDM_InspectorData[characterName].ItemsData ~= nil) then
+	if(InspectorData[characterName].ItemsData ~= nil) then
 		--if there allready exists ItemsData, lets add only new interesting data
-		local startIndex, endIndex = string.find(CDM_InspectorData[characterName].ItemsData, allItems);
+		local startIndex, endIndex = string.find(InspectorData[characterName].ItemsData, allItems);
 		if(startIndex == 1) then
 			--Data allready exists in here, we are done
 		elseif(startIndex ~= nil) then
 			--Data allready exists in here, but not infront of everything else.
-			local newItemsData = allItems..string.gsub(CDM_InspectorData[characterName].ItemsData, allItems, "");
-			CDM_InspectorData[characterName].ItemsData = newItemsData;
+			local newItemsData = allItems..string.gsub(InspectorData[characterName].ItemsData, allItems, "");
+			InspectorData[characterName].ItemsData = newItemsData;
 		else
 			--Data doesnt exist in here, lets add it infront of everything else
-			local oldItems = CDM_InspectorData[characterName].ItemsData;
+			local oldItems = InspectorData[characterName].ItemsData;
 			for i, v in pairs(allItemsList) do
 				oldItems = string.gsub(oldItems, v, "");--Extra comma added earlier makes this easy
 			end
-			CDM_InspectorData[characterName].ItemsData = allItems..oldItems;
+			InspectorData[characterName].ItemsData = allItems..oldItems;
 		end
 	else
-		CDM_InspectorData[characterName].ItemsData = allItems;
+		InspectorData[characterName].ItemsData = allItems;
 	end
 end
 
 function UpdateCharacterTalentsData(_Target)
 	local characterName = UnitName(_Target);
 	local talentData = "";
-	
+
 	function _GetTalentPageData(_PageIndex, _IsPlayer)
 		local talentData = "";
 		local numTalents = GetNumTalents(_PageIndex, _IsPlayer ~= true);
@@ -796,7 +796,7 @@ function UpdateCharacterTalentsData(_Target)
 		talentData = talentData.._GetTalentPageData(3, false);
 	end
 
-	CDM_InspectorData[characterName].TalentsData = talentData;
+	InspectorData[characterName].TalentsData = talentData;
 end
 
 function UpdateCharacterMetaData(_Target)
@@ -804,13 +804,13 @@ function UpdateCharacterMetaData(_Target)
 	local _, characterClass = UnitClass(_Target);
 	local currTime = GetTime();
 
-	CDM_InspectorData[characterName].LastInspect = currTime;
+	InspectorData[characterName].LastInspect = currTime;
 	local currentDate = date("!%Y-%m-%d %X");
-	if(CDM_InspectorData[characterName].DateTimeUTC == nil or string.sub(currentDate, 1, -5) ~= string.sub(CDM_InspectorData[characterName].DateTimeUTC, 1, -5)) then
+	if(InspectorData[characterName].DateTimeUTC == nil or string.sub(currentDate, 1, -5) ~= string.sub(InspectorData[characterName].DateTimeUTC, 1, -5)) then
 		RecentlyInspectedTime = currTime;
 		table.insert(RecentlyInspected, ClassColor[characterClass]..characterName);
 	end
-	CDM_InspectorData[characterName].DateTimeUTC = currentDate;
+	InspectorData[characterName].DateTimeUTC = currentDate;
 end
 
 function InspectDone(success)
@@ -828,11 +828,11 @@ end
 
 RealmPlayers_HasBeenWarnedOnce = false;
 RealmPlayers_Playername = "Unknown";
-CDM_Inspector_Settings = {["DebugMode"] = true,["MaxDatabase"] = 1000};
-CDM_InspectorData = {};
+Inspector_Settings = {["DebugMode"] = true,["MaxDatabase"] = 1000};
+InspectorData = {};
 local NextInspectTryTime = 0;
 local AutomaticInspection = nil;
-function CDM_Inspector_OnUpdate()
+function Inspector_OnUpdate()
 	local currTime = GetTime();
 	if(CurrentlyInspecting ~= nil) then
 		local affectingCombat = UnitAffectingCombat("player");
@@ -840,7 +840,7 @@ function CDM_Inspector_OnUpdate()
 		if(affectingCombat == true) then
 			inspectionFrequency = 240;
 		end
-		if(CDM_InspectorData[CurrentlyInspecting] == nil or currTime - CDM_InspectorData[CurrentlyInspecting].LastInspect > inspectionFrequency or currTime < CDM_InspectorData[CurrentlyInspecting].LastInspect or Inspect_Honor_Update == true) then --3600) then
+		if(InspectorData[CurrentlyInspecting] == nil or currTime - InspectorData[CurrentlyInspecting].LastInspect > inspectionFrequency or currTime < InspectorData[CurrentlyInspecting].LastInspect or Inspect_Honor_Update == true) then --3600) then
 			if(UnitName("target") ~= CurrentlyInspecting) then
 				InspectDone();
 				return;
@@ -870,17 +870,17 @@ function CDM_Inspector_OnUpdate()
 				end
 			end
 			if(CurrentlyInspectingStage == 2) then
-				if(CDM_InspectorData[CurrentlyInspecting] == nil) then
-					if(CDM_Inspector_Settings["MaxDatabase"] < table.getn(CDM_InspectorData)) then
+				if(InspectorData[CurrentlyInspecting] == nil) then
+					if(Inspector_Settings["MaxDatabase"] < table.getn(InspectorData)) then
 						if(RealmPlayers_HasBeenWarnedOnce == false) then
-							DEFAULT_CHAT_FRAME:AddMessage("Inspector database now has "..table.getn(CDM_InspectorData).." players, this is more than specified in the settings, addon will not collect anymore data unless setting \"MaxDatabase\" is set to a higher value or database is uploaded/cleaned");
+							DEFAULT_CHAT_FRAME:AddMessage("Inspector database now has "..table.getn(InspectorData).." players, this is more than specified in the settings, addon will not collect anymore data unless setting \"MaxDatabase\" is set to a higher value or database is uploaded/cleaned");
 							RealmPlayers_HasBeenWarnedOnce = true;
 						end
 						InspectDone();
 						return;
 					end
-					CDM_InspectorData[CurrentlyInspecting] = {};
-					CDM_InspectorData[CurrentlyInspecting].LastInspect = 0;
+					InspectorData[CurrentlyInspecting] = {};
+					InspectorData[CurrentlyInspecting].LastInspect = 0;
 				end
 				Inspect_Honor_Update = false;
 				if(UnitName("target") == UnitName("player")) then
@@ -931,15 +931,15 @@ function CDM_Inspector_OnUpdate()
 end
 
 else--if not string.find(GetBuildInfo(), "^2%.") then
-	DEFAULT_CHAT_FRAME:AddMessage("ERROR! CDM_Inspector does not work on this WoW version! Only works on World of Warcraft TBC!");
-	
-	function CDM_Inspector_OnLoad()
+	DEFAULT_CHAT_FRAME:AddMessage("ERROR! Inspector does not work on this WoW version! Only works on World of Warcraft TBC!");
+
+	function Inspector_OnLoad()
 
 	end
-	function CDM_Inspector_OnEvent()
+	function Inspector_OnEvent()
 
 	end
-	function CDM_Inspector_OnUpdate()
+	function Inspector_OnUpdate()
 
 	end
 end--if string.find(GetBuildInfo(), "^2%.") then

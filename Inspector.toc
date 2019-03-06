@@ -1,0 +1,10 @@
+## Interface: 20400
+## Title: Inspector
+## Author:
+## Version: 0.1.0
+## Notes:
+## Dependencies:
+## OptionalDeps: SuperInspect, SuperInspect_UI
+## SavedVariablesPerCharacter:
+## SavedVariables: InspectorData, Inspector_Playername, InspectorVersion, Inspector_Settings
+Inspector.xml
